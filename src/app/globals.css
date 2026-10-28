@@ -3,15 +3,16 @@
 
 :root {
   color-scheme: dark;
-  --paper: #0f0f0e;
-  --ink: #ecebe7;
-  --muted: #a19d95;
-  --line: #2a2926;
-  --surface: #191917;
+  /* Lacivert tonlar */
+  --paper: #0b1426;
+  --ink: #e6ebf5;
+  --muted: #94a3bf;
+  --line: #1e2c4a;
+  --surface: #111d36;
   --accent: #fb923c;
   --accent-2: #f472b6;
-  --glow: rgba(251, 146, 60, 0.16);
-  --dot: rgba(236, 235, 231, 0.07);
+  --glow: rgba(251, 146, 60, 0.14);
+  --dot: rgba(148, 163, 191, 0.1);
 }
 
 @theme inline {
@@ -69,8 +70,8 @@ body {
   color: #1d1c1a;
 }
 .article pre {
-  background: #000;
-  color: #ecebe7;
+  background: #060d1b;
+  color: #e6ebf5;
   border: 1px solid var(--line);
 }
 

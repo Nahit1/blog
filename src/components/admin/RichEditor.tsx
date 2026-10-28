@@ -15,7 +15,7 @@ import { Video } from "./video-extension";
 export type EditorValue = { json: JSONContent; html: string };
 
 // Koyu zemin üzerinde okunabilir tonlar
-const TEXT_COLORS = ["#ecebe7", "#fb923c", "#f87171", "#fbbf24", "#4ade80", "#60a5fa", "#c084fc", "#a19d95"];
+const TEXT_COLORS = ["#e6ebf5", "#fb923c", "#f87171", "#fbbf24", "#4ade80", "#60a5fa", "#c084fc", "#94a3bf"];
 const HIGHLIGHTS = ["#fef08a", "#bbf7d0", "#bfdbfe", "#fbcfe8", "#fed7aa"];
 const FONT_SIZES = [
   { label: "Küçük", value: "14px" },

@@ -57,7 +57,7 @@ export function SectionForm({ initial, uploadMode }: { initial: SectionValues; u
             name={l === "tr" ? "titleTr" : "titleEn"}
             defaultValue={l === "tr" ? initial.titleTr : initial.titleEn}
             placeholder={l === "tr" ? "Bölüm başlığı (örn. Deneyim)" : "Section title (e.g. Experience)"}
-            className="w-full bg-transparent font-serif text-3xl font-semibold tracking-tight outline-none placeholder:text-line"
+            className="w-full bg-transparent font-serif text-3xl font-semibold tracking-tight outline-none placeholder:text-muted/50"
           />
           <RichEditor
             initialContent={l === "tr" ? initial.bodyTrJson : initial.bodyEnJson}

@@ -77,7 +77,7 @@ export function PostForm({ initial, translations, uploadMode }: { initial: PostF
         }}
         placeholder="Başlık"
         required
-        className="w-full bg-transparent font-serif text-4xl font-semibold tracking-tight outline-none placeholder:text-line"
+        className="w-full bg-transparent font-serif text-4xl font-semibold tracking-tight outline-none placeholder:text-muted/50"
       />
 
       <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
