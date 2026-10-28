@@ -9,9 +9,10 @@
   --muted: #94a3bf;
   --line: #1e2c4a;
   --surface: #111d36;
-  --accent: #fb923c;
-  --accent-2: #f472b6;
-  --glow: rgba(251, 146, 60, 0.14);
+  /* Vurgu: gök mavisi → çivit */
+  --accent: #38bdf8;
+  --accent-2: #818cf8;
+  --glow: rgba(56, 189, 248, 0.14);
   --dot: rgba(148, 163, 191, 0.1);
 }
 
@@ -124,7 +125,7 @@ html:focus-within {
 
 /* Üzerinde beyaz yazı olan dolgular: iki temada da yeterli kontrast için sabit koyu tonlar */
 .bg-gradient-accent {
-  background: linear-gradient(120deg, #c2410c, #be185d);
+  background: linear-gradient(120deg, #0369a1, #4f46e5);
 }
 
 .hero-backdrop {
