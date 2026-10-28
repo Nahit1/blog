@@ -131,10 +131,14 @@ export async function savePost(_prev: FormState, formData: FormData): Promise<Fo
 
   revalidatePath("/", "layout");
   if (!existing) {
-    await toast(status === "PUBLISHED" ? "Yazı oluşturuldu ve yayınlandı." : "Taslak oluşturuldu.");
+    await toast(status === "PUBLISHED" ? `Yazı ${langName(input.locale)} olarak yayınlandı.` : "Taslak oluşturuldu.");
     redirect(`/admin/posts/${post.id}`);
   }
-  return done(input.intent === "publish" ? "Yazı yayınlandı." : input.intent === "unpublish" ? "Yazı yayından kaldırıldı, taslağa alındı." : status === "PUBLISHED" ? "Yazı güncellendi." : "Taslak kaydedildi.");
+  return done(input.intent === "publish" ? `Yazı ${langName(input.locale)} olarak yayınlandı.` : input.intent === "unpublish" ? "Yazı yayından kaldırıldı, taslağa alındı." : status === "PUBLISHED" ? "Yazı güncellendi." : "Taslak kaydedildi.");
+}
+
+function langName(locale: "tr" | "en") {
+  return locale === "tr" ? "Türkçe" : "İngilizce";
 }
 
 export async function deletePost(formData: FormData) {

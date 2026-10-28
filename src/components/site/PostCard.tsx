@@ -3,6 +3,7 @@ import { formatDate, localePath, t, type Locale } from "@/lib/i18n";
 
 export type PostCardData = {
   id: string;
+  locale: Locale;
   slug: string;
   title: string;
   excerpt: string | null;
@@ -15,8 +16,9 @@ export type PostCardData = {
 export function PostCard({ post, locale }: { post: PostCardData; locale: Locale }) {
   const d = t(locale);
   return (
-    <Link href={localePath(locale, `/blog/${post.slug}`)} className="card-hover group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-surface">
+    <Link href={localePath(post.locale, `/blog/${post.slug}`)} className="card-hover group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-surface">
       <div className="relative aspect-[16/10] overflow-hidden bg-paper">
+        {post.locale !== locale && <LocaleBadge locale={post.locale} className="absolute right-3 top-3 z-10" />}
         {post.coverImage ? (
           // eslint-disable-next-line @next/next/no-img-element -- harici depolama adresleri değişken
           <img src={post.coverImage} alt="" className="size-full object-cover transition duration-500 group-hover:scale-105" />
@@ -41,5 +43,14 @@ export function PostCard({ post, locale }: { post: PostCardData; locale: Locale 
         )}
       </div>
     </Link>
+  );
+}
+
+/** Yazı sayfanın dilinden farklı bir dildeyse gösterilen küçük etiket. */
+export function LocaleBadge({ locale, className = "" }: { locale: Locale; className?: string }) {
+  return (
+    <span title={locale === "tr" ? "Türkçe" : "English"} className={`rounded-full bg-black/60 px-2 py-0.5 font-mono text-[11px] font-semibold tracking-wider text-white backdrop-blur ${className}`}>
+      {locale.toUpperCase()}
+    </span>
   );
 }

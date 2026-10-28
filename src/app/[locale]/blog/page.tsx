@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PostList } from "@/components/site/PostList";
 import { SubscribeForm } from "@/components/site/SubscribeForm";
-import { db } from "@/lib/db";
+import { listPosts } from "@/lib/posts";
 import { t, type Locale } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
@@ -14,11 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
 export default async function BlogPage({ params }: { params: Promise<{ locale: Locale }> }) {
   const { locale } = await params;
   const d = t(locale);
-  const posts = await db.post.findMany({
-    where: { locale, status: "PUBLISHED" },
-    orderBy: { publishedAt: "desc" },
-    select: { id: true, slug: true, title: true, excerpt: true, publishedAt: true, readingMinutes: true },
-  });
+  const posts = await listPosts(locale);
 
   return (
     <div className="mx-auto max-w-3xl px-5 sm:px-6 space-y-16 pt-10">

@@ -11,8 +11,8 @@ export function SiteHeader({ locale, name, hasSkills }: { locale: Locale; name: 
   const home = localePath(locale);
   const nav = [
     { href: localePath(locale, "/about"), label: d.about },
-    ...(hasSkills ? [{ href: `${home === "/" ? "" : home}/#skills`, label: d.skills, desktopOnly: true }] : []),
     { href: localePath(locale, "/blog"), label: d.blog },
+    ...(hasSkills ? [{ href: `${home === "/" ? "" : home}/#skills`, label: d.skills, desktopOnly: true }] : []),
     { href: `${home === "/" ? "" : home}/#contact`, label: d.contact },
   ];
 

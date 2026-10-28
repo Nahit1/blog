@@ -12,7 +12,7 @@ export default async function SectionsAdminPage() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-serif text-3xl font-semibold">Bölümler</h1>
-          <p className="mt-1 text-sm text-muted">Deneyim, projeler, eğitim, konuşmalar… istediğin her şey. Ana sayfada yeteneklerden sonra, yazılardan önce gösterilir.</p>
+          <p className="mt-1 text-sm text-muted">Deneyim, projeler, eğitim, konuşmalar… istediğin her şey. Ana sayfada yazılardan sonra, yeteneklerden önce gösterilir.</p>
         </div>
         <Link href="/admin/sections/new" className="btn-primary">Yeni bölüm</Link>
       </div>

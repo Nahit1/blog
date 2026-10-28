@@ -7,6 +7,7 @@ import { SocialLinks } from "@/components/site/SocialIcon";
 import { SubscribeForm } from "@/components/site/SubscribeForm";
 import { db } from "@/lib/db";
 import { localePath, t, type Locale } from "@/lib/i18n";
+import { listPosts } from "@/lib/posts";
 import { getProfile } from "@/lib/profile";
 import { slugify } from "@/lib/text";
 
@@ -22,12 +23,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
     getProfile(),
     db.skillGroup.findMany({ orderBy: { order: "asc" } }),
     db.section.findMany({ where: { visible: true }, orderBy: { order: "asc" } }),
-    db.post.findMany({
-      where: { locale, status: "PUBLISHED" },
-      orderBy: { publishedAt: "desc" },
-      take: 3,
-      select: { id: true, slug: true, title: true, excerpt: true, coverImage: true, publishedAt: true, readingMinutes: true, tags: true },
-    }),
+    listPosts(locale, 3),
   ]);
 
   const headline = en ? profile.headlineEn : profile.headlineTr;
@@ -116,6 +112,40 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
         </div>
       </section>
 
+      {/* Yazılar */}
+      <section id="writing" className={`${container} py-16 sm:py-20`}>
+        <SectionHeading
+          index={`${next()} — ${d.blog}`}
+          title={d.latestPosts}
+          subtitle={d.writingSubtitle}
+          action={posts.length > 0 && <Link href={localePath(locale, "/blog")} className="text-sm font-medium text-muted transition hover:text-accent">{d.allPosts} →</Link>}
+        />
+        {posts.length === 0 ? (
+          <Reveal><p className="rounded-2xl border border-dashed border-line p-10 text-center text-muted">{d.noPosts}</p></Reveal>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-3">
+            {posts.map((p, i) => (
+              <Reveal key={p.id} delay={i * 100}>
+                <PostCard post={p} locale={locale} />
+              </Reveal>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Panelden eklenen bölümler */}
+      {visibleSections.map((s) => {
+        const title = en ? s.titleEn : s.titleTr;
+        return (
+          <section key={s.id} id={slugify(title)} className={`${container} py-16 sm:py-20`}>
+            <SectionHeading index={next()} title={title} />
+            <Reveal className="rounded-2xl border border-line bg-surface p-6 sm:p-10">
+              <div className="article prose prose-lg max-w-none font-serif" dangerouslySetInnerHTML={{ __html: en ? s.bodyEnHtml : s.bodyTrHtml }} />
+            </Reveal>
+          </section>
+        );
+      })}
+
       {/* Yetenekler */}
       {skillGroups.length > 0 && (
         <section id="skills" className={`${container} py-16 sm:py-20`}>
@@ -140,40 +170,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
           </div>
         </section>
       )}
-
-      {/* Panelden eklenen bölümler */}
-      {visibleSections.map((s) => {
-        const title = en ? s.titleEn : s.titleTr;
-        return (
-          <section key={s.id} id={slugify(title)} className={`${container} py-16 sm:py-20`}>
-            <SectionHeading index={next()} title={title} />
-            <Reveal className="rounded-2xl border border-line bg-surface p-6 sm:p-10">
-              <div className="article prose prose-lg max-w-none font-serif" dangerouslySetInnerHTML={{ __html: en ? s.bodyEnHtml : s.bodyTrHtml }} />
-            </Reveal>
-          </section>
-        );
-      })}
-
-      {/* Yazılar */}
-      <section id="writing" className={`${container} py-16 sm:py-20`}>
-        <SectionHeading
-          index={`${next()} — ${d.blog}`}
-          title={d.latestPosts}
-          subtitle={d.writingSubtitle}
-          action={posts.length > 0 && <Link href={localePath(locale, "/blog")} className="text-sm font-medium text-muted transition hover:text-accent">{d.allPosts} →</Link>}
-        />
-        {posts.length === 0 ? (
-          <Reveal><p className="rounded-2xl border border-dashed border-line p-10 text-center text-muted">{d.noPosts}</p></Reveal>
-        ) : (
-          <div className="grid gap-6 md:grid-cols-3">
-            {posts.map((p, i) => (
-              <Reveal key={p.id} delay={i * 100}>
-                <PostCard post={p} locale={locale} />
-              </Reveal>
-            ))}
-          </div>
-        )}
-      </section>
 
       {/* İletişim */}
       <section id="contact" className={`${container} py-16 sm:py-20`}>
