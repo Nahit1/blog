@@ -6,12 +6,12 @@ function initials(name: string) {
   return name.split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]).join("").toLocaleUpperCase("tr");
 }
 
-export function SiteHeader({ locale, name }: { locale: Locale; name: string }) {
+export function SiteHeader({ locale, name, hasSkills }: { locale: Locale; name: string; hasSkills: boolean }) {
   const d = t(locale);
   const home = localePath(locale);
   const nav = [
     { href: localePath(locale, "/about"), label: d.about },
-    { href: `${home === "/" ? "" : home}/#skills`, label: d.skills, desktopOnly: true },
+    ...(hasSkills ? [{ href: `${home === "/" ? "" : home}/#skills`, label: d.skills, desktopOnly: true }] : []),
     { href: localePath(locale, "/blog"), label: d.blog },
     { href: `${home === "/" ? "" : home}/#contact`, label: d.contact },
   ];

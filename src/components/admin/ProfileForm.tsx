@@ -44,11 +44,7 @@ export function ProfileForm({ initial, uploadMode }: { initial: ProfileValues; u
         <h1 className="font-serif text-3xl font-semibold">Hakkımda</h1>
         <button disabled={pending} className="btn-primary">{pending ? "Kaydediliyor…" : "Kaydet"}</button>
       </div>
-      {(state.error || state.ok) && (
-        <p role="status" className={`rounded-lg px-4 py-2.5 text-sm ${state.error ? "bg-red-500/10 text-red-300" : "bg-green-500/10 text-green-300"}`}>
-          {state.error ?? state.ok}
-        </p>
-      )}
+      {state.error && <p role="alert" className="rounded-lg bg-red-500/10 px-4 py-2.5 text-sm text-red-300">{state.error}</p>}
 
       <section className="grid gap-5 rounded-xl border border-line bg-surface p-5 sm:grid-cols-2">
         <div className="sm:col-span-2">

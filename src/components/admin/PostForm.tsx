@@ -26,8 +26,8 @@ export type PostFormValues = {
 
 type TranslationOption = { id: string; title: string; locale: "tr" | "en" };
 
-export function PostForm({ initial, translations, uploadMode, savedNotice }: { initial: PostFormValues; translations: TranslationOption[]; uploadMode: UploadMode; savedNotice?: boolean }) {
-  const [state, action, pending] = useActionState<FormState, FormData>(savePost, savedNotice ? { ok: "Kaydedildi." } : {});
+export function PostForm({ initial, translations, uploadMode }: { initial: PostFormValues; translations: TranslationOption[]; uploadMode: UploadMode }) {
+  const [state, action, pending] = useActionState<FormState, FormData>(savePost, {});
   const [title, setTitle] = useState(initial.title);
   const [slug, setSlug] = useState(initial.slug);
   const [slugTouched, setSlugTouched] = useState(Boolean(initial.slug));
@@ -66,11 +66,7 @@ export function PostForm({ initial, translations, uploadMode, savedNotice }: { i
         </div>
       </div>
 
-      {(state.error || state.ok) && (
-        <p role="status" className={`rounded-lg px-4 py-2.5 text-sm ${state.error ? "bg-red-500/10 text-red-300" : "bg-green-500/10 text-green-300"}`}>
-          {state.error ?? state.ok}
-        </p>
-      )}
+      {state.error && <p role="alert" className="rounded-lg bg-red-500/10 px-4 py-2.5 text-sm text-red-300">{state.error}</p>}
 
       <input
         name="title"

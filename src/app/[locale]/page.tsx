@@ -121,7 +121,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
         <section id="skills" className={`${container} py-16 sm:py-20`}>
           <SectionHeading
             index={next()}
-            title={(en ? profile.skillsTitleEn : profile.skillsTitleTr) || d.skills}
+            title={(en ? profile.skillsTitleEn || profile.skillsTitleTr : profile.skillsTitleTr) || d.skills}
             subtitle={(en ? profile.skillsSubtitleEn : profile.skillsSubtitleTr) || d.skillsSubtitle}
           />
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

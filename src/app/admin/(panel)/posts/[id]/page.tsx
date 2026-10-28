@@ -8,8 +8,8 @@ import { deletePost } from "../../../actions";
 
 export const dynamic = "force-dynamic";
 
-export default async function EditPostPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ saved?: string }> }) {
-  const [{ id }, { saved }] = await Promise.all([params, searchParams]);
+export default async function EditPostPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const post = await db.post.findUnique({ where: { id } });
   if (!post) notFound();
 
@@ -25,7 +25,6 @@ export default async function EditPostPage({ params, searchParams }: { params: P
       <PostForm
         uploadMode={uploadMode()}
         translations={translations}
-        savedNotice={saved === "1"}
         initial={{
           id: post.id,
           title: post.title,

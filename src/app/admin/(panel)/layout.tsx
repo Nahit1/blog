@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { Toaster } from "@/components/admin/Toaster";
 import { requireAdmin } from "@/lib/auth";
+import { readFlash } from "@/lib/flash";
 import { logout } from "../actions";
 
 const NAV = [
@@ -12,7 +14,7 @@ const NAV = [
 ];
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
-  const user = await requireAdmin();
+  const [user, flash] = await Promise.all([requireAdmin(), readFlash()]);
   return (
     <div className="mx-auto flex min-h-screen max-w-6xl flex-col md:flex-row">
       <aside className="border-b border-line px-5 py-5 md:w-56 md:shrink-0 md:border-b-0 md:border-r md:py-8">
@@ -29,6 +31,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
         </form>
       </aside>
       <main className="min-w-0 flex-1 px-5 py-8 md:px-10">{children}</main>
+      <Toaster flash={flash} />
     </div>
   );
 }

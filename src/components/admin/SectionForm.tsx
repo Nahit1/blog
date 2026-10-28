@@ -19,8 +19,8 @@ export type SectionValues = {
   visible: boolean;
 };
 
-export function SectionForm({ initial, uploadMode, savedNotice }: { initial: SectionValues; uploadMode: UploadMode; savedNotice?: boolean }) {
-  const [state, action, pending] = useActionState<FormState, FormData>(saveSection, savedNotice ? { ok: "Bölüm oluşturuldu." } : {});
+export function SectionForm({ initial, uploadMode }: { initial: SectionValues; uploadMode: UploadMode }) {
+  const [state, action, pending] = useActionState<FormState, FormData>(saveSection, {});
   const [bodyTr, setBodyTr] = useState({ json: initial.bodyTrJson, html: initial.bodyTrHtml });
   const [bodyEn, setBodyEn] = useState({ json: initial.bodyEnJson, html: initial.bodyEnHtml });
   const [tab, setTab] = useState<"tr" | "en">("tr");
@@ -42,11 +42,7 @@ export function SectionForm({ initial, uploadMode, savedNotice }: { initial: Sec
           <button disabled={pending} className="btn-primary">{pending ? "Kaydediliyor…" : "Kaydet"}</button>
         </div>
       </div>
-      {(state.error || state.ok) && (
-        <p role="status" className={`rounded-lg px-4 py-2.5 text-sm ${state.error ? "bg-red-500/10 text-red-300" : "bg-green-500/10 text-green-300"}`}>
-          {state.error ?? state.ok}
-        </p>
-      )}
+      {state.error && <p role="alert" className="rounded-lg bg-red-500/10 px-4 py-2.5 text-sm text-red-300">{state.error}</p>}
 
       <div className="flex gap-1 rounded-lg bg-surface p-1 ring-1 ring-line sm:w-fit">
         {(["tr", "en"] as const).map((l) => (

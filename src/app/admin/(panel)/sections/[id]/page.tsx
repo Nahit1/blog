@@ -8,8 +8,8 @@ import { deleteSection } from "../../../actions";
 
 export const dynamic = "force-dynamic";
 
-export default async function EditSectionPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ saved?: string }> }) {
-  const [{ id }, { saved }] = await Promise.all([params, searchParams]);
+export default async function EditSectionPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const s = await db.section.findUnique({ where: { id } });
   if (!s) notFound();
 
@@ -17,7 +17,6 @@ export default async function EditSectionPage({ params, searchParams }: { params
     <div className="space-y-12">
       <SectionForm
         uploadMode={uploadMode()}
-        savedNotice={saved === "1"}
         initial={{
           id: s.id,
           titleTr: s.titleTr,

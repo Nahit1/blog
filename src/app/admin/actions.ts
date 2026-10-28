@@ -8,11 +8,30 @@ import { z } from "zod";
 import type { Prisma } from "@/generated/prisma/client";
 import { createSession, destroySession, requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { flash, type Flash } from "@/lib/flash";
 import { newPostMail, sendMails } from "@/lib/mail";
 import { sanitizeContent } from "@/lib/sanitize";
 import { readingMinutes, slugify } from "@/lib/text";
 
 export type FormState = { error?: string; ok?: string };
+
+/** Toast mesajı bırakır ve paneli yeniler; böylece sayfa değişmeyen işlemlerde de toast görünür. */
+async function toast(message: string, type: Flash["type"] = "success") {
+  await flash(message, type);
+  revalidatePath("/admin", "layout");
+}
+
+/** Başarı mesajını toast olarak gösterir. */
+async function done(message: string): Promise<FormState> {
+  await toast(message);
+  return { ok: message };
+}
+
+/** Hata mesajını hem toast olarak hem formun yanında gösterir. */
+async function fail(message: string): Promise<FormState> {
+  await toast(message, "error");
+  return { error: message };
+}
 
 // ---------- Giriş ----------
 
@@ -63,11 +82,11 @@ const postSchema = z.object({
 export async function savePost(_prev: FormState, formData: FormData): Promise<FormState> {
   await requireAdmin();
   const parsed = postSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Form geçersiz" };
+  if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Form geçersiz");
   const input = parsed.data;
 
   const slug = slugify(input.slug || input.title);
-  if (!slug) return { error: "Geçerli bir adres (slug) gir." };
+  if (!slug) return fail("Geçerli bir adres (slug) gir.");
   const clash = await db.post.findFirst({ where: { locale: input.locale, slug, NOT: input.id ? { id: input.id } : undefined } });
   if (clash) return { error: `Bu dilde "${slug}" adresli başka bir yazı var.` };
 
@@ -75,11 +94,11 @@ export async function savePost(_prev: FormState, formData: FormData): Promise<Fo
   try {
     contentJson = JSON.parse(input.contentJson || '{"type":"doc","content":[]}');
   } catch {
-    return { error: "İçerik okunamadı." };
+    return fail("İçerik okunamadı.");
   }
   const contentHtml = sanitizeContent(input.contentHtml);
   const existing = input.id ? await db.post.findUnique({ where: { id: input.id } }) : null;
-  if (input.id && !existing) return { error: "Yazı bulunamadı." };
+  if (input.id && !existing) return fail("Yazı bulunamadı.");
 
   const status = input.intent === "publish" ? "PUBLISHED" : input.intent === "unpublish" ? "DRAFT" : (existing?.status ?? "DRAFT");
 
@@ -111,37 +130,41 @@ export async function savePost(_prev: FormState, formData: FormData): Promise<Fo
   const post = existing ? await db.post.update({ where: { id: existing.id }, data }) : await db.post.create({ data });
 
   revalidatePath("/", "layout");
-  if (!existing) redirect(`/admin/posts/${post.id}?saved=1`);
-  return { ok: status === "PUBLISHED" ? "Kaydedildi ve yayında." : "Taslak kaydedildi." };
+  if (!existing) {
+    await toast(status === "PUBLISHED" ? "Yazı oluşturuldu ve yayınlandı." : "Taslak oluşturuldu.");
+    redirect(`/admin/posts/${post.id}`);
+  }
+  return done(input.intent === "publish" ? "Yazı yayınlandı." : input.intent === "unpublish" ? "Yazı yayından kaldırıldı, taslağa alındı." : status === "PUBLISHED" ? "Yazı güncellendi." : "Taslak kaydedildi.");
 }
 
 export async function deletePost(formData: FormData) {
   await requireAdmin();
   await db.post.delete({ where: { id: String(formData.get("id")) } });
   revalidatePath("/", "layout");
+  await toast("Yazı silindi.");
   redirect("/admin/posts");
 }
 
 export async function notifySubscribers(postId: string): Promise<FormState> {
   await requireAdmin();
   const post = await db.post.findUnique({ where: { id: postId } });
-  if (!post || post.status !== "PUBLISHED") return { error: "Önce yazıyı yayınlaman gerekiyor." };
-  if (post.notifiedAt) return { error: "Bu yazı için abonelere zaten bildirim gönderildi." };
+  if (!post || post.status !== "PUBLISHED") return fail("Önce yazıyı yayınlaman gerekiyor.");
+  if (post.notifiedAt) return fail("Bu yazı için abonelere zaten bildirim gönderildi.");
 
   const subscribers = await db.subscriber.findMany({ where: { confirmed: true, locales: { has: post.locale } } });
-  if (subscribers.length === 0) return { error: "Bu dilde onaylı abone yok." };
+  if (subscribers.length === 0) return fail("Bu dilde onaylı abone yok.");
 
   // Önce işaretle: aynı anda iki kez tıklanırsa ikinci gönderim engellenir.
   const { count } = await db.post.updateMany({ where: { id: post.id, notifiedAt: null }, data: { notifiedAt: new Date() } });
-  if (count === 0) return { error: "Bu yazı için abonelere zaten bildirim gönderildi." };
+  if (count === 0) return fail("Bu yazı için abonelere zaten bildirim gönderildi.");
   try {
     await sendMails(subscribers.map((s) => newPostMail(s.email, s.token, post)));
   } catch (e) {
     await db.post.update({ where: { id: post.id }, data: { notifiedAt: null } });
-    return { error: (e as Error).message };
+    return fail((e as Error).message);
   }
   revalidatePath("/admin", "layout");
-  return { ok: `${subscribers.length} aboneye e-posta gönderildi.` };
+  return done(`${subscribers.length} aboneye e-posta gönderildi.`);
 }
 
 // ---------- Profil ----------
@@ -162,7 +185,7 @@ export async function saveProfile(_prev: FormState, formData: FormData): Promise
         return { label: label.trim(), url: rest.join("|").trim() };
       }),
   );
-  if (!links.success) return { error: "Linkler satır başına \"Ad | https://adres\" biçiminde olmalı." };
+  if (!links.success) return fail("Linkler satır başına \"Ad | https://adres\" biçiminde olmalı.");
 
   const parseJson = (k: string) => {
     try {
@@ -192,7 +215,7 @@ export async function saveProfile(_prev: FormState, formData: FormData): Promise
   };
   await db.profile.upsert({ where: { id: 1 }, update: data, create: { id: 1, ...data } });
   revalidatePath("/", "layout");
-  return { ok: "Profil kaydedildi." };
+  return done("Profil kaydedildi.");
 }
 
 // ---------- Aboneler ----------
@@ -201,6 +224,7 @@ export async function deleteSubscriber(formData: FormData) {
   await requireAdmin();
   await db.subscriber.delete({ where: { id: String(formData.get("id")) } });
   revalidatePath("/admin/subscribers");
+  await toast("Abone silindi.");
 }
 
 // ---------- Ana sayfa: yetenekler ve özel bölümler ----------
@@ -228,10 +252,18 @@ export async function saveSkillGroup(formData: FormData) {
   const titleTr = String(formData.get("titleTr") ?? "").trim();
   const titleEn = String(formData.get("titleEn") ?? "").trim() || titleTr;
   const items = String(formData.get("items") ?? "").split(/[,\n]/).map((s) => s.trim()).filter(Boolean);
-  if (!titleTr) return;
+  if (!titleTr) {
+    await toast("Grup adı (TR) boş olamaz.", "error");
+    return;
+  }
+  if (items.length === 0) {
+    await toast("En az bir yetenek yaz (virgülle ayırarak).", "error");
+    return;
+  }
   if (id) await db.skillGroup.update({ where: { id }, data: { titleTr, titleEn, items } });
   else await db.skillGroup.create({ data: { titleTr, titleEn, items, order: await db.skillGroup.count() } });
   revalidatePath("/", "layout");
+  await toast(id ? `"${titleTr}" grubu güncellendi.` : `"${titleTr}" grubu eklendi.`);
 }
 
 export async function saveSkillsHeading(formData: FormData) {
@@ -245,12 +277,14 @@ export async function saveSkillsHeading(formData: FormData) {
   };
   await db.profile.upsert({ where: { id: 1 }, update: data, create: { id: 1, ...data } });
   revalidatePath("/", "layout");
+  await toast("Bölüm başlığı kaydedildi.");
 }
 
 export async function deleteSkillGroup(formData: FormData) {
   await requireAdmin();
   await db.skillGroup.delete({ where: { id: String(formData.get("id")) } });
   revalidatePath("/", "layout");
+  await toast("Grup silindi.");
 }
 
 export async function moveItem(formData: FormData) {
@@ -258,6 +292,7 @@ export async function moveItem(formData: FormData) {
   const model = formData.get("model") === "section" ? "section" : "skillGroup";
   await swapOrder(model, String(formData.get("id")), formData.get("dir") === "up" ? "up" : "down");
   revalidatePath("/", "layout");
+  await toast("Sıralama güncellendi.");
 }
 
 export async function saveSection(_prev: FormState, formData: FormData): Promise<FormState> {
@@ -266,7 +301,7 @@ export async function saveSection(_prev: FormState, formData: FormData): Promise
   const id = get("id");
   const titleTr = get("titleTr");
   const titleEn = get("titleEn");
-  if (!titleTr && !titleEn) return { error: "En az bir dilde başlık gir." };
+  if (!titleTr && !titleEn) return fail("En az bir dilde başlık gir.");
   const parseJson = (k: string) => {
     try {
       return JSON.parse(get(k) || "null") ?? undefined;
@@ -286,15 +321,17 @@ export async function saveSection(_prev: FormState, formData: FormData): Promise
   revalidatePath("/", "layout");
   if (id) {
     await db.section.update({ where: { id }, data });
-    return { ok: "Bölüm kaydedildi." };
+    return done("Bölüm kaydedildi.");
   }
   const section = await db.section.create({ data: { ...data, order: await db.section.count() } });
-  redirect(`/admin/sections/${section.id}?saved=1`);
+  await toast("Bölüm oluşturuldu.");
+  redirect(`/admin/sections/${section.id}`);
 }
 
 export async function deleteSection(formData: FormData) {
   await requireAdmin();
   await db.section.delete({ where: { id: String(formData.get("id")) } });
   revalidatePath("/", "layout");
+  await toast("Bölüm silindi.");
   redirect("/admin/sections");
 }

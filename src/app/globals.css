@@ -107,8 +107,11 @@ body {
 
 /* ---------- Kişisel site: efektler ---------- */
 html {
-  scroll-behavior: smooth;
   scroll-padding-top: 5rem;
+}
+/* Yumuşak kaydırma yalnızca sayfa içi link tıklamalarında; #adres ile açılışta anında atlar */
+html:focus-within {
+  scroll-behavior: smooth;
 }
 
 .text-gradient {
@@ -183,9 +186,20 @@ html {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
+  html:focus-within { scroll-behavior: auto; }
   .blob, .avatar-ring { animation: none; }
   .js .reveal { opacity: 1; transform: none; transition: none; }
   .fade-up { animation: none; }
   .card-hover:hover { transform: none; }
+}
+
+.toast-in {
+  animation: toast-in 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .toast-in { animation: none; }
 }
