@@ -39,7 +39,7 @@ export default async function SubscribersPage() {
                   <td className="px-4 py-3 text-right">
                     <form action={deleteSubscriber}>
                       <input type="hidden" name="id" value={s.id} />
-                      <ConfirmSubmit message={`${s.email} silinsin mi?`} className="text-xs text-red-600 underline">Sil</ConfirmSubmit>
+                      <ConfirmSubmit message={`${s.email} silinsin mi?`} className="text-xs text-red-400 underline">Sil</ConfirmSubmit>
                     </form>
                   </td>
                 </tr>

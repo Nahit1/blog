@@ -42,7 +42,7 @@ export function SubscribeForm({ locale, d }: { locale: Locale; d: Dictionary }) 
               <input type="checkbox" name="locales" value="en" defaultChecked={locale === "en"} className="accent-[var(--accent)]" /> {d.english}
             </label>
           </fieldset>
-          {state.status === "error" && <p className="text-sm text-red-600" role="alert">{d.subscribeInvalid}</p>}
+          {state.status === "error" && <p className="text-sm text-red-400" role="alert">{d.subscribeInvalid}</p>}
         </form>
       )}
     </section>

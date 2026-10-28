@@ -14,7 +14,8 @@ import { Video } from "./video-extension";
 
 export type EditorValue = { json: JSONContent; html: string };
 
-const TEXT_COLORS = ["#1d1c1a", "#b4532a", "#c0392b", "#d97706", "#15803d", "#1d4ed8", "#7c3aed", "#6e6a63"];
+// Koyu zemin üzerinde okunabilir tonlar
+const TEXT_COLORS = ["#ecebe7", "#fb923c", "#f87171", "#fbbf24", "#4ade80", "#60a5fa", "#c084fc", "#a19d95"];
 const HIGHLIGHTS = ["#fef08a", "#bbf7d0", "#bfdbfe", "#fbcfe8", "#fed7aa"];
 const FONT_SIZES = [
   { label: "Küçük", value: "14px" },
@@ -191,7 +192,7 @@ function Toolbar({ editor, onUpload }: { editor: Editor; onUpload: (accept: stri
           const url = window.prompt("YouTube video linki");
           if (url) chain().setYoutubeVideo({ src: url }).run();
         }}
-      ><span className="text-xs font-bold text-red-600">▶</span></Btn>
+      ><span className="text-xs font-bold text-red-400">▶</span></Btn>
 
       <Sep />
       <Btn label="Biçimlendirmeyi temizle" onClick={() => chain().unsetAllMarks().clearNodes().run()}>⌫</Btn>

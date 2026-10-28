@@ -68,6 +68,11 @@ model Profile {
   statusTr   String   @default("")
   statusEn   String   @default("")
   resumeUrl  String?
+  // Ana sayfadaki Yetenekler bölümünün başlığı/alt yazısı (boşsa varsayılan metin)
+  skillsTitleTr    String @default("")
+  skillsTitleEn    String @default("")
+  skillsSubtitleTr String @default("")
+  skillsSubtitleEn String @default("")
   // [{ label: string, url: string }]
   links      Json     @default("[]")
   updatedAt  DateTime @updatedAt

@@ -48,6 +48,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
         <div className="hero-backdrop absolute inset-0 -z-10" aria-hidden />
         <div className="blob -z-10 left-[8%] top-16 size-72" aria-hidden />
         <div className="blob -z-10 right-[6%] top-48 size-80 [animation-delay:-7s]" style={{ background: "color-mix(in oklab, var(--accent-2) 16%, transparent)" }} aria-hidden />
+        <div className="absolute inset-x-0 bottom-0 -z-10 h-32 bg-gradient-to-b from-transparent to-paper" aria-hidden />
 
         <div className={`${container} grid items-center gap-10 pb-20 pt-12 sm:pt-20 md:grid-cols-[1fr_auto] md:pb-28`}>
           <div>
@@ -118,7 +119,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
       {/* Yetenekler */}
       {skillGroups.length > 0 && (
         <section id="skills" className={`${container} py-16 sm:py-20`}>
-          <SectionHeading index={next()} title={d.skills} subtitle={d.skillsSubtitle} />
+          <SectionHeading
+            index={next()}
+            title={(en ? profile.skillsTitleEn : profile.skillsTitleTr) || d.skills}
+            subtitle={(en ? profile.skillsSubtitleEn : profile.skillsSubtitleTr) || d.skillsSubtitle}
+          />
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {skillGroups.map((g, i) => (
               <Reveal key={g.id} delay={i * 80} className="card-hover rounded-2xl border border-line bg-surface p-6">

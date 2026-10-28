@@ -234,6 +234,19 @@ export async function saveSkillGroup(formData: FormData) {
   revalidatePath("/", "layout");
 }
 
+export async function saveSkillsHeading(formData: FormData) {
+  await requireAdmin();
+  const get = (k: string) => String(formData.get(k) ?? "").trim();
+  const data = {
+    skillsTitleTr: get("skillsTitleTr"),
+    skillsTitleEn: get("skillsTitleEn"),
+    skillsSubtitleTr: get("skillsSubtitleTr"),
+    skillsSubtitleEn: get("skillsSubtitleEn"),
+  };
+  await db.profile.upsert({ where: { id: 1 }, update: data, create: { id: 1, ...data } });
+  revalidatePath("/", "layout");
+}
+
 export async function deleteSkillGroup(formData: FormData) {
   await requireAdmin();
   await db.skillGroup.delete({ where: { id: String(formData.get("id")) } });
@@ -283,5 +296,5 @@ export async function deleteSection(formData: FormData) {
   await requireAdmin();
   await db.section.delete({ where: { id: String(formData.get("id")) } });
   revalidatePath("/", "layout");
-  redirect("/admin/home");
+  redirect("/admin/sections");
 }

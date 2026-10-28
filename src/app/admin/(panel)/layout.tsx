@@ -4,7 +4,8 @@ import { logout } from "../actions";
 
 const NAV = [
   { href: "/admin", label: "Genel bakış" },
-  { href: "/admin/home", label: "Ana sayfa" },
+  { href: "/admin/skills", label: "Yetenekler" },
+  { href: "/admin/sections", label: "Bölümler" },
   { href: "/admin/posts", label: "Yazılar" },
   { href: "/admin/profile", label: "Hakkımda" },
   { href: "/admin/subscribers", label: "Aboneler" },

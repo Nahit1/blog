@@ -46,7 +46,7 @@ export function PostForm({ initial, translations, uploadMode, savedNotice }: { i
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3 text-sm">
           <Link href="/admin/posts" className="text-muted hover:text-ink">← Yazılar</Link>
-          <span className={`rounded-full px-2.5 py-0.5 text-xs ${published ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800"}`}>
+          <span className={`rounded-full px-2.5 py-0.5 text-xs ${published ? "bg-green-500/15 text-green-300" : "bg-amber-500/15 text-amber-300"}`}>
             {published ? "Yayında" : "Taslak"}
           </span>
           {published && <a href={publicUrl} target="_blank" className="text-muted underline hover:text-ink">Görüntüle ↗</a>}
@@ -67,7 +67,7 @@ export function PostForm({ initial, translations, uploadMode, savedNotice }: { i
       </div>
 
       {(state.error || state.ok) && (
-        <p role="status" className={`rounded-lg px-4 py-2.5 text-sm ${state.error ? "bg-red-50 text-red-700" : "bg-green-50 text-green-800"}`}>
+        <p role="status" className={`rounded-lg px-4 py-2.5 text-sm ${state.error ? "bg-red-500/10 text-red-300" : "bg-green-500/10 text-green-300"}`}>
           {state.error ?? state.ok}
         </p>
       )}

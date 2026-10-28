@@ -34,7 +34,7 @@ export function SectionForm({ initial, uploadMode, savedNotice }: { initial: Sec
       <input type="hidden" name="bodyEnHtml" value={bodyEn.html} />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link href="/admin/home" className="text-sm text-muted hover:text-ink">← Ana sayfa</Link>
+        <Link href="/admin/sections" className="text-sm text-muted hover:text-ink">← Bölümler</Link>
         <div className="flex items-center gap-4">
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" name="visible" defaultChecked={initial.visible} className="accent-[var(--accent)]" /> Sitede göster
@@ -43,7 +43,7 @@ export function SectionForm({ initial, uploadMode, savedNotice }: { initial: Sec
         </div>
       </div>
       {(state.error || state.ok) && (
-        <p role="status" className={`rounded-lg px-4 py-2.5 text-sm ${state.error ? "bg-red-50 text-red-700" : "bg-green-50 text-green-800"}`}>
+        <p role="status" className={`rounded-lg px-4 py-2.5 text-sm ${state.error ? "bg-red-500/10 text-red-300" : "bg-green-500/10 text-green-300"}`}>
           {state.error ?? state.ok}
         </p>
       )}

@@ -39,7 +39,7 @@ export default async function PostsPage() {
                   </td>
                   <td className="px-4 py-3 text-xs">{p.locale.toUpperCase()}</td>
                   <td className="px-4 py-3">
-                    <span className={`rounded-full px-2.5 py-0.5 text-xs ${p.status === "PUBLISHED" ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800"}`}>
+                    <span className={`rounded-full px-2.5 py-0.5 text-xs ${p.status === "PUBLISHED" ? "bg-green-500/15 text-green-300" : "bg-amber-500/15 text-amber-300"}`}>
                       {p.status === "PUBLISHED" ? "Yayında" : "Taslak"}
                     </span>
                   </td>

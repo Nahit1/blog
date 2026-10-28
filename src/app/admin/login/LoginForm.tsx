@@ -15,7 +15,7 @@ export function LoginForm() {
         <span className="text-muted">Şifre</span>
         <input name="password" type="password" required autoComplete="current-password" className="input mt-1" />
       </label>
-      {state.error && <p className="text-sm text-red-600" role="alert">{state.error}</p>}
+      {state.error && <p className="text-sm text-red-400" role="alert">{state.error}</p>}
       <button disabled={pending} className="btn-primary w-full">{pending ? "Giriş yapılıyor…" : "Giriş yap"}</button>
     </form>
   );

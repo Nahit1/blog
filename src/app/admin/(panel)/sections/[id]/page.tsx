@@ -31,7 +31,7 @@ export default async function EditSectionPage({ params, searchParams }: { params
       />
       <form action={deleteSection} className="border-t border-line pt-6">
         <input type="hidden" name="id" value={s.id} />
-        <ConfirmSubmit message="Bu bölüm silinsin mi?" className="text-sm text-red-600 underline">Bu bölümü sil</ConfirmSubmit>
+        <ConfirmSubmit message="Bu bölüm silinsin mi?" className="text-sm text-red-400 underline">Bu bölümü sil</ConfirmSubmit>
       </form>
     </div>
   );

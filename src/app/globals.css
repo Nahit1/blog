@@ -2,29 +2,16 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  --paper: #fbfaf7;
-  --ink: #1d1c1a;
-  --muted: #6e6a63;
-  --line: #e7e3dc;
-  --surface: #ffffff;
-  --accent: #c2410c;
-  --accent-2: #db2777;
-  --glow: rgba(234, 88, 12, 0.18);
-  --dot: rgba(29, 28, 26, 0.07);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --paper: #141413;
-    --ink: #ecebe7;
-    --muted: #a19d95;
-    --line: #2c2b28;
-    --surface: #1c1b19;
-    --accent: #fb923c;
-    --accent-2: #f472b6;
-    --glow: rgba(251, 146, 60, 0.14);
-    --dot: rgba(236, 235, 231, 0.06);
-  }
+  color-scheme: dark;
+  --paper: #0f0f0e;
+  --ink: #ecebe7;
+  --muted: #a19d95;
+  --line: #2a2926;
+  --surface: #191917;
+  --accent: #fb923c;
+  --accent-2: #f472b6;
+  --glow: rgba(251, 146, 60, 0.16);
+  --dot: rgba(236, 235, 231, 0.07);
 }
 
 @theme inline {
@@ -78,11 +65,13 @@ body {
 .article mark {
   border-radius: 0.2em;
   padding: 0 0.15em;
-  color: inherit;
+  /* Vurgu renkleri açık tonlar; üzerindeki yazı koyu kalmalı */
+  color: #1d1c1a;
 }
 .article pre {
-  background: #1d1c1a;
+  background: #000;
   color: #ecebe7;
+  border: 1px solid var(--line);
 }
 
 /* Editör */

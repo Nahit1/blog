@@ -42,7 +42,7 @@ export default async function EditPostPage({ params, searchParams }: { params: P
       />
       <form action={deletePost} className="border-t border-line pt-6">
         <input type="hidden" name="id" value={post.id} />
-        <ConfirmSubmit message="Bu yazı kalıcı olarak silinsin mi?" className="text-sm text-red-600 underline">Bu yazıyı kalıcı olarak sil</ConfirmSubmit>
+        <ConfirmSubmit message="Bu yazı kalıcı olarak silinsin mi?" className="text-sm text-red-400 underline">Bu yazıyı kalıcı olarak sil</ConfirmSubmit>
       </form>
     </div>
   );
