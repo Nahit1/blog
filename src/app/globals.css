@@ -1,26 +1,110 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --paper: #fbfaf7;
+  --ink: #1d1c1a;
+  --muted: #6e6a63;
+  --line: #e7e3dc;
+  --surface: #ffffff;
+  --accent: #b4532a;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --paper: #141413;
+    --ink: #ecebe7;
+    --muted: #a19d95;
+    --line: #2c2b28;
+    --surface: #1c1b19;
+    --accent: #e0855c;
   }
 }
 
+@theme inline {
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-surface: var(--surface);
+  --color-accent: var(--accent);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-serif), ui-serif, Georgia, serif;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+/* Yazı içeriği: editörde ve yayında aynı görünüm */
+.article {
+  --tw-prose-body: var(--ink);
+  --tw-prose-headings: var(--ink);
+  --tw-prose-links: var(--accent);
+  --tw-prose-bold: var(--ink);
+  --tw-prose-quotes: var(--ink);
+  --tw-prose-quote-borders: var(--accent);
+  --tw-prose-counters: var(--muted);
+  --tw-prose-bullets: var(--muted);
+  --tw-prose-hr: var(--line);
+  --tw-prose-code: var(--ink);
+  --tw-prose-captions: var(--muted);
+}
+.article img,
+.article video {
+  border-radius: 0.5rem;
+  margin-inline: auto;
+}
+.article video {
+  width: 100%;
+}
+.article iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  border-radius: 0.5rem;
+}
+.article div[data-youtube-video] {
+  margin: 1.5em 0;
+}
+.article mark {
+  border-radius: 0.2em;
+  padding: 0 0.15em;
+  color: inherit;
+}
+.article pre {
+  background: #1d1c1a;
+  color: #ecebe7;
+}
+
+/* Editör */
+.tiptap {
+  outline: none;
+  min-height: 320px;
+}
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--muted);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+.tiptap img.ProseMirror-selectednode,
+.tiptap video.ProseMirror-selectednode,
+.tiptap div[data-youtube-video].ProseMirror-selectednode {
+  outline: 3px solid var(--accent);
+}
+
+/* Admin form elemanları */
+@layer components {
+  .input {
+    @apply w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink outline-none transition focus:border-ink;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg bg-ink px-4 py-2 text-sm font-medium text-paper transition hover:opacity-90 disabled:opacity-50;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-lg border border-line bg-surface px-4 py-2 text-sm font-medium transition hover:border-ink disabled:opacity-50;
+  }
 }

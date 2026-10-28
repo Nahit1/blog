@@ -1,0 +1,32 @@
+import type { Metadata } from "next";
+import { PostList } from "@/components/site/PostList";
+import { SubscribeForm } from "@/components/site/SubscribeForm";
+import { db } from "@/lib/db";
+import { t, type Locale } from "@/lib/i18n";
+
+export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return { title: t(locale).blog, alternates: { languages: { tr: "/blog", en: "/en/blog" } } };
+}
+
+export default async function BlogPage({ params }: { params: Promise<{ locale: Locale }> }) {
+  const { locale } = await params;
+  const d = t(locale);
+  const posts = await db.post.findMany({
+    where: { locale, status: "PUBLISHED" },
+    orderBy: { publishedAt: "desc" },
+    select: { id: true, slug: true, title: true, excerpt: true, publishedAt: true, readingMinutes: true },
+  });
+
+  return (
+    <div className="space-y-16 pt-10">
+      <div>
+        <h1 className="mb-10 font-serif text-4xl font-semibold tracking-tight">{d.blog}</h1>
+        <PostList posts={posts} locale={locale} />
+      </div>
+      <SubscribeForm locale={locale} d={d} />
+    </div>
+  );
+}

@@ -1,0 +1,42 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import "../globals.css";
+import { SiteFooter } from "@/components/site/SiteFooter";
+import { SiteHeader } from "@/components/site/SiteHeader";
+import { inter, serif } from "@/lib/fonts";
+import { isLocale, locales } from "@/lib/i18n";
+import { getProfile } from "@/lib/profile";
+import { siteUrl } from "@/lib/site";
+
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }));
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const profile = await getProfile();
+  const description = (locale === "en" ? profile.headlineEn : profile.headlineTr) || undefined;
+  return {
+    metadataBase: new URL(siteUrl),
+    title: { default: profile.name, template: `%s · ${profile.name}` },
+    description,
+    alternates: { languages: { tr: "/", en: "/en" } },
+    openGraph: { siteName: profile.name, locale: locale === "en" ? "en_US" : "tr_TR", type: "website" },
+  };
+}
+
+export default async function LocaleLayout({ children, params }: { children: React.ReactNode; params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+  const profile = await getProfile();
+
+  return (
+    <html lang={locale} className={`${inter.variable} ${serif.variable}`}>
+      <body className="min-h-screen font-sans antialiased">
+        <SiteHeader locale={locale} name={profile.name} />
+        <main className="mx-auto max-w-3xl px-5 sm:px-6">{children}</main>
+        <SiteFooter name={profile.name} links={profile.links} />
+      </body>
+    </html>
+  );
+}

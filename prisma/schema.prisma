@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Locale {
+  tr
+  en
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+model Post {
+  id             String     @id @default(cuid())
+  locale         Locale
+  slug           String
+  title          String
+  excerpt        String?
+  coverImage     String?
+  contentJson    Json
+  contentHtml    String
+  tags           String[]
+  readingMinutes Int        @default(1)
+  status         PostStatus @default(DRAFT)
+  publishedAt    DateTime?
+  notifiedAt     DateTime?
+  // Aynı translationKey değerini taşıyan yazılar birbirinin çevirisidir.
+  translationKey String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@unique([locale, slug])
+  @@index([status, publishedAt])
+  @@index([translationKey])
+}
+
+// Tek satırlık tablo (id = 1): site sahibinin tanıtım bilgileri.
+model Profile {
+  id         Int      @id @default(1)
+  name       String   @default("Nahit Ferhat Ektaş")
+  email      String?
+  location   String?
+  avatarUrl  String?
+  headlineTr String   @default("")
+  headlineEn String   @default("")
+  introTr    String   @default("")
+  introEn    String   @default("")
+  bioTrJson  Json?
+  bioTrHtml  String   @default("")
+  bioEnJson  Json?
+  bioEnHtml  String   @default("")
+  // [{ label: string, url: string }]
+  links      Json     @default("[]")
+  updatedAt  DateTime @updatedAt
+}
+
+model Subscriber {
+  id          String    @id @default(cuid())
+  email       String    @unique
+  locales     Locale[]
+  confirmed   Boolean   @default(false)
+  // Onay ve abonelikten çıkma linklerinde kullanılır.
+  token       String    @unique
+  createdAt   DateTime  @default(now())
+  confirmedAt DateTime?
+}
