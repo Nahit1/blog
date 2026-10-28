@@ -64,6 +64,10 @@ model Profile {
   bioTrHtml  String   @default("")
   bioEnJson  Json?
   bioEnHtml  String   @default("")
+  // Ana sayfadaki küçük durum rozeti, örn. "Yeni projelere açığım"
+  statusTr   String   @default("")
+  statusEn   String   @default("")
+  resumeUrl  String?
   // [{ label: string, url: string }]
   links      Json     @default("[]")
   updatedAt  DateTime @updatedAt
@@ -78,4 +82,26 @@ model Subscriber {
   token       String    @unique
   createdAt   DateTime  @default(now())
   confirmedAt DateTime?
+}
+
+model SkillGroup {
+  id      String   @id @default(cuid())
+  titleTr String
+  titleEn String
+  items   String[]
+  order   Int      @default(0)
+}
+
+// Ana sayfada gösterilen, panelden eklenen serbest bölümler.
+model Section {
+  id         String   @id @default(cuid())
+  titleTr    String
+  titleEn    String
+  bodyTrJson Json?
+  bodyTrHtml String   @default("")
+  bodyEnJson Json?
+  bodyEnHtml String   @default("")
+  order      Int      @default(0)
+  visible    Boolean  @default(true)
+  updatedAt  DateTime @updatedAt
 }

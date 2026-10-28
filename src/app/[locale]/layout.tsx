@@ -31,10 +31,13 @@ export default async function LocaleLayout({ children, params }: { children: Rea
   const profile = await getProfile();
 
   return (
-    <html lang={locale} className={`${inter.variable} ${serif.variable}`}>
+    <html lang={locale} className={`${inter.variable} ${serif.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
+      </head>
       <body className="min-h-screen font-sans antialiased">
         <SiteHeader locale={locale} name={profile.name} />
-        <main className="mx-auto max-w-3xl px-5 sm:px-6">{children}</main>
+        <main>{children}</main>
         <SiteFooter name={profile.name} links={profile.links} />
       </body>
     </html>

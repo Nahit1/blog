@@ -19,7 +19,7 @@ export default async function ConfirmPage({
   }
 
   return (
-    <div className="mx-auto max-w-md pt-20 text-center">
+    <div className="mx-auto max-w-md px-5 pt-20 text-center">
       <h1 className="font-serif text-3xl font-semibold">{subscriber ? d.confirmedTitle : "—"}</h1>
       <p className="mt-4 text-muted">{subscriber ? d.confirmedText : d.invalidLink}</p>
       <Link href={localePath(locale)} className="mt-8 inline-block text-sm underline underline-offset-4">{d.backHome}</Link>

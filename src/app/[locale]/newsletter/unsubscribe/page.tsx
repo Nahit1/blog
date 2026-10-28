@@ -13,7 +13,7 @@ export default async function UnsubscribePage({
   const d = t(locale);
 
   return (
-    <div className="mx-auto max-w-md pt-20 text-center">
+    <div className="mx-auto max-w-md px-5 pt-20 text-center">
       <h1 className="font-serif text-3xl font-semibold">{d.unsubscribeTitle}</h1>
       {done ? (
         <p className="mt-4 text-muted">{d.unsubscribedText}</p>

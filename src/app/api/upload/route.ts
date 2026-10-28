@@ -5,7 +5,7 @@ import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { getCurrentUser } from "@/lib/auth";
 import { slugify } from "@/lib/text";
 
-const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif", "image/svg+xml", "video/mp4", "video/webm", "video/quicktime"];
+const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif", "image/svg+xml", "video/mp4", "video/webm", "video/quicktime", "application/pdf"];
 const MAX_BYTES = 500 * 1024 * 1024;
 
 export async function POST(request: Request) {

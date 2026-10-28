@@ -13,6 +13,9 @@ export type ProfileValues = {
   email: string;
   location: string;
   avatarUrl: string;
+  resumeUrl: string;
+  statusTr: string;
+  statusEn: string;
   headlineTr: string;
   headlineEn: string;
   introTr: string;
@@ -51,6 +54,9 @@ export function ProfileForm({ initial, uploadMode }: { initial: ProfileValues; u
         <div className="sm:col-span-2">
           <ImageField name="avatarUrl" label="Profil fotoğrafı" defaultValue={initial.avatarUrl} uploadMode={uploadMode} rounded />
         </div>
+        <div className="sm:col-span-2">
+          <ImageField name="resumeUrl" label="CV (PDF) — ana sayfada indirme butonu çıkar" defaultValue={initial.resumeUrl} uploadMode={uploadMode} accept="application/pdf" />
+        </div>
         <label className="block text-sm">
           <span className="text-muted">Ad soyad</span>
           <input name="name" defaultValue={initial.name} className="input mt-1" />
@@ -82,6 +88,10 @@ export function ProfileForm({ initial, uploadMode }: { initial: ProfileValues; u
             <label className="block text-sm">
               <span className="text-muted">Unvan / kısa tanım</span>
               <input name={l === "tr" ? "headlineTr" : "headlineEn"} defaultValue={l === "tr" ? initial.headlineTr : initial.headlineEn} className="input mt-1" placeholder={l === "tr" ? "Yazılım geliştirici" : "Software developer"} />
+            </label>
+            <label className="block text-sm">
+              <span className="text-muted">Durum rozeti (boş bırakılırsa görünmez)</span>
+              <input name={l === "tr" ? "statusTr" : "statusEn"} defaultValue={l === "tr" ? initial.statusTr : initial.statusEn} className="input mt-1" placeholder={l === "tr" ? "Yeni projelere açığım" : "Open to new opportunities"} />
             </label>
             <label className="block text-sm">
               <span className="text-muted">Ana sayfa tanıtım metni</span>

@@ -7,7 +7,10 @@
   --muted: #6e6a63;
   --line: #e7e3dc;
   --surface: #ffffff;
-  --accent: #b4532a;
+  --accent: #c2410c;
+  --accent-2: #db2777;
+  --glow: rgba(234, 88, 12, 0.18);
+  --dot: rgba(29, 28, 26, 0.07);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -17,7 +20,10 @@
     --muted: #a19d95;
     --line: #2c2b28;
     --surface: #1c1b19;
-    --accent: #e0855c;
+    --accent: #fb923c;
+    --accent-2: #f472b6;
+    --glow: rgba(251, 146, 60, 0.14);
+    --dot: rgba(236, 235, 231, 0.06);
   }
 }
 
@@ -28,6 +34,7 @@
   --color-line: var(--line);
   --color-surface: var(--surface);
   --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-serif), ui-serif, Georgia, serif;
 }
@@ -107,4 +114,89 @@ body {
   .btn-secondary {
     @apply inline-flex items-center justify-center rounded-lg border border-line bg-surface px-4 py-2 text-sm font-medium transition hover:border-ink disabled:opacity-50;
   }
+}
+
+/* ---------- Kişisel site: efektler ---------- */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+.text-gradient {
+  background: linear-gradient(100deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Üzerinde beyaz yazı olan dolgular: iki temada da yeterli kontrast için sabit koyu tonlar */
+.bg-gradient-accent {
+  background: linear-gradient(120deg, #c2410c, #be185d);
+}
+
+.hero-backdrop {
+  background-image: radial-gradient(var(--dot) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 40%, transparent 100%);
+}
+
+.blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(70px);
+  background: var(--glow);
+  animation: float 14s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, -20px) scale(1.08); }
+}
+
+.avatar-ring {
+  background: conic-gradient(from 180deg, var(--accent), var(--accent-2), var(--accent));
+  animation: spin 12s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Kaydırınca belirme: sadece JS çalışıyorsa gizlenir (html.js layout'ta eklenir). */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.js .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Sayfa açılışında JS beklemeden çalışan giriş animasyonu */
+.fade-up {
+  animation: fade-up 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: var(--delay, 0ms);
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+
+.card-hover {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in oklab, var(--accent) 40%, var(--line));
+  box-shadow: 0 18px 40px -20px var(--glow), 0 8px 20px -12px rgba(0, 0, 0, 0.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .blob, .avatar-ring { animation: none; }
+  .js .reveal { opacity: 1; transform: none; transition: none; }
+  .fade-up { animation: none; }
+  .card-hover:hover { transform: none; }
 }

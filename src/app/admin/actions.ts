@@ -177,6 +177,9 @@ export async function saveProfile(_prev: FormState, formData: FormData): Promise
     email: get("email") || null,
     location: get("location") || null,
     avatarUrl: get("avatarUrl") || null,
+    resumeUrl: get("resumeUrl") || null,
+    statusTr: get("statusTr"),
+    statusEn: get("statusEn"),
     headlineTr: get("headlineTr"),
     headlineEn: get("headlineEn"),
     introTr: get("introTr"),
@@ -198,4 +201,87 @@ export async function deleteSubscriber(formData: FormData) {
   await requireAdmin();
   await db.subscriber.delete({ where: { id: String(formData.get("id")) } });
   revalidatePath("/admin/subscribers");
+}
+
+// ---------- Ana sayfa: yetenekler ve özel bölümler ----------
+
+/** Sıralı bir listede öğeyi bir üst/alt komşusuyla yer değiştirir ve listeyi 0..n olarak yeniden numaralar. */
+async function swapOrder(model: "skillGroup" | "section", id: string, dir: "up" | "down") {
+  const query = { orderBy: { order: "asc" as const }, select: { id: true } };
+  const items = model === "section" ? await db.section.findMany(query) : await db.skillGroup.findMany(query);
+  const i = items.findIndex((x) => x.id === id);
+  const j = dir === "up" ? i - 1 : i + 1;
+  if (i < 0 || j < 0 || j >= items.length) return;
+  [items[i], items[j]] = [items[j], items[i]];
+  await db.$transaction(
+    items.map((x, order) =>
+      model === "section"
+        ? db.section.update({ where: { id: x.id }, data: { order } })
+        : db.skillGroup.update({ where: { id: x.id }, data: { order } }),
+    ),
+  );
+}
+
+export async function saveSkillGroup(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  const titleTr = String(formData.get("titleTr") ?? "").trim();
+  const titleEn = String(formData.get("titleEn") ?? "").trim() || titleTr;
+  const items = String(formData.get("items") ?? "").split(/[,\n]/).map((s) => s.trim()).filter(Boolean);
+  if (!titleTr) return;
+  if (id) await db.skillGroup.update({ where: { id }, data: { titleTr, titleEn, items } });
+  else await db.skillGroup.create({ data: { titleTr, titleEn, items, order: await db.skillGroup.count() } });
+  revalidatePath("/", "layout");
+}
+
+export async function deleteSkillGroup(formData: FormData) {
+  await requireAdmin();
+  await db.skillGroup.delete({ where: { id: String(formData.get("id")) } });
+  revalidatePath("/", "layout");
+}
+
+export async function moveItem(formData: FormData) {
+  await requireAdmin();
+  const model = formData.get("model") === "section" ? "section" : "skillGroup";
+  await swapOrder(model, String(formData.get("id")), formData.get("dir") === "up" ? "up" : "down");
+  revalidatePath("/", "layout");
+}
+
+export async function saveSection(_prev: FormState, formData: FormData): Promise<FormState> {
+  await requireAdmin();
+  const get = (k: string) => String(formData.get(k) ?? "").trim();
+  const id = get("id");
+  const titleTr = get("titleTr");
+  const titleEn = get("titleEn");
+  if (!titleTr && !titleEn) return { error: "En az bir dilde başlık gir." };
+  const parseJson = (k: string) => {
+    try {
+      return JSON.parse(get(k) || "null") ?? undefined;
+    } catch {
+      return undefined;
+    }
+  };
+  const data = {
+    titleTr,
+    titleEn,
+    bodyTrJson: parseJson("bodyTrJson"),
+    bodyTrHtml: sanitizeContent(get("bodyTrHtml")),
+    bodyEnJson: parseJson("bodyEnJson"),
+    bodyEnHtml: sanitizeContent(get("bodyEnHtml")),
+    visible: formData.get("visible") === "on",
+  };
+  revalidatePath("/", "layout");
+  if (id) {
+    await db.section.update({ where: { id }, data });
+    return { ok: "Bölüm kaydedildi." };
+  }
+  const section = await db.section.create({ data: { ...data, order: await db.section.count() } });
+  redirect(`/admin/sections/${section.id}?saved=1`);
+}
+
+export async function deleteSection(formData: FormData) {
+  await requireAdmin();
+  await db.section.delete({ where: { id: String(formData.get("id")) } });
+  revalidatePath("/", "layout");
+  redirect("/admin/home");
 }

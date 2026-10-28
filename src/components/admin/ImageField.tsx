@@ -3,13 +3,13 @@
 import { useState } from "react";
 import { pickFile, uploadFile, type UploadMode } from "./upload";
 
-/** Tek bir görsel adresini (kapak, profil fotoğrafı) yükleyip gizli input'ta tutar. */
-export function ImageField({ name, label, defaultValue, uploadMode, rounded }: { name: string; label: string; defaultValue?: string | null; uploadMode: UploadMode; rounded?: boolean }) {
+/** Tek bir dosya adresini (kapak, profil fotoğrafı, CV) yükleyip gizli input'ta tutar. */
+export function ImageField({ name, label, defaultValue, uploadMode, rounded, accept = "image/*" }: { name: string; label: string; defaultValue?: string | null; uploadMode: UploadMode; rounded?: boolean; accept?: string }) {
   const [url, setUrl] = useState(defaultValue ?? "");
   const [busy, setBusy] = useState(false);
 
   async function choose() {
-    const file = await pickFile("image/*");
+    const file = await pickFile(accept);
     if (!file) return;
     setBusy(true);
     try {
@@ -26,7 +26,9 @@ export function ImageField({ name, label, defaultValue, uploadMode, rounded }: {
       <span className="text-muted">{label}</span>
       <input type="hidden" name={name} value={url} />
       <div className="mt-1 flex items-center gap-3">
-        {url ? (
+        {url && !accept.startsWith("image") ? (
+          <a href={url} target="_blank" className="max-w-40 truncate text-xs underline">{url.split("/").pop()}</a>
+        ) : url ? (
           // eslint-disable-next-line @next/next/no-img-element -- yüklenen dosyanın önizlemesi
           <img src={url} alt="" className={`object-cover ring-1 ring-line ${rounded ? "size-16 rounded-full" : "h-16 w-28 rounded-lg"}`} />
         ) : (

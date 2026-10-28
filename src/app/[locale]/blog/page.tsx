@@ -21,7 +21,7 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: L
   });
 
   return (
-    <div className="space-y-16 pt-10">
+    <div className="mx-auto max-w-3xl px-5 sm:px-6 space-y-16 pt-10">
       <div>
         <h1 className="mb-10 font-serif text-4xl font-semibold tracking-tight">{d.blog}</h1>
         <PostList posts={posts} locale={locale} />

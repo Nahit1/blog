@@ -18,7 +18,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
   const bio = locale === "en" ? profile.bioEnHtml : profile.bioTrHtml;
 
   return (
-    <div className="pt-10">
+    <div className="mx-auto max-w-3xl px-5 sm:px-6 pt-10">
       <div className="mb-10 flex items-center gap-5">
         {profile.avatarUrl && (
           <Image src={profile.avatarUrl} alt={profile.name} width={96} height={96} className="size-20 rounded-full object-cover sm:size-24" />

@@ -46,7 +46,7 @@ export default async function PostPage({ params }: Params) {
     : null;
 
   return (
-    <article className="pt-10">
+    <article className="mx-auto max-w-3xl px-5 sm:px-6 pt-10">
       <header className="mb-10">
         <p className="text-xs uppercase tracking-wider text-muted">
           {post.publishedAt && formatDate(post.publishedAt, locale)} · {post.readingMinutes} {d.minRead}
