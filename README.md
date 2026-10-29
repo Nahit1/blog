@@ -42,15 +42,24 @@ npm run dev                   # http://localhost:3000
 
 ## Canlıya çıkış (Vercel + Neon + Resend)
 
-1. **Kodu GitHub'a yükle** (özel repo olabilir).
-2. **Neon:** [neon.tech](https://neon.tech) üzerinde proje oluştur, bağlantı adresini (`postgresql://...?sslmode=require`) kopyala.
-3. **Vercel:** Repoyu içe aktar. *Storage → Blob* ile bir Blob deposu oluşturup projeye bağla (`BLOB_READ_WRITE_TOKEN` otomatik eklenir).
-4. **Ortam değişkenleri** (Vercel → Settings → Environment Variables):
-   - `DATABASE_URL`: Neon adresi
-   - `AUTH_SECRET`: `openssl rand -base64 32` çıktısı
-   - `SITE_URL`: `https://nahitferhat.com`
-   - `RESEND_API_KEY`, `MAIL_FROM` (örn. `Nahit Ferhat Ektaş <bulten@nahitferhat.com>`)
-5. **Deploy et.** `vercel-build` betiği veritabanı migration'larını otomatik çalıştırır.
-6. **Admin hesabı:** Lokalde `.env` içindeki `DATABASE_URL`'i geçici olarak Neon adresiyle değiştirip `npm run admin:create -- e-posta "şifre"` çalıştır.
-7. **Domain:** Vercel → Domains bölümüne `nahitferhat.com` ekle ve gösterdiği DNS kayıtlarını domain sağlayıcına gir.
-8. **Resend:** *Domains* bölümüne `nahitferhat.com` ekleyip verdiği DNS kayıtlarını (SPF/DKIM) gir. Doğrulanınca mailler kendi domaininden gider.
+Kod GitHub'da (`main` dalı). Vercel `main`'e her push'ta siteyi otomatik yeniden yayınlar.
+
+1. **Vercel projesi:** [vercel.com](https://vercel.com) → GitHub ile giriş → *Add New → Project* → `blog` reposunu *Import* et. İlk deploy veritabanı olmadığı için hata verebilir; sorun değil.
+2. **Veritabanı (Neon):** Projede *Storage → Create Database → Neon (Postgres)* → projeye bağla. Vercel `DATABASE_URL` ve `DATABASE_URL_UNPOOLED` değişkenlerini kendisi ekler.
+3. **Dosya depolama (Blob):** *Storage → Create → Blob* → erişim **Public** → projeye bağla (`BLOB_READ_WRITE_TOKEN` otomatik eklenir).
+4. **Ortam değişkenleri** (*Settings → Environment Variables*):
+   - `AUTH_SECRET`: `openssl rand -base64 32` çıktısı (lokaldekinden farklı olsun)
+   - `SITE_URL`: şimdilik Vercel adresi (örn. `https://blog-xxx.vercel.app`), domain bağlanınca `https://nahitferhat.com`
+   - `MAIL_FROM`: `Nahit Ferhat Ektaş <bulten@nahitferhat.com>`
+   - `RESEND_API_KEY`: domain doğrulanınca (8. adım)
+5. **Yeniden deploy:** *Deployments → … → Redeploy*. Build sırasında tablolar otomatik oluşturulur (`prisma migrate deploy`).
+6. **Admin hesabı:** Neon'daki `DATABASE_URL_UNPOOLED` adresini kopyalayıp lokalde çalıştır:
+   ```bash
+   DATABASE_URL="postgresql://...neon.tech/..." npm run admin:create -- sen@ornek.com "guclu-bir-sifre"
+   ```
+7. **Domain:** *Settings → Domains* → `nahitferhat.com` ve `www.nahitferhat.com` ekle; Vercel'in gösterdiği DNS kayıtlarını domain sağlayıcına gir. Sonra `SITE_URL`'i güncelleyip yeniden deploy et.
+8. **E-posta (Resend):** [resend.com](https://resend.com) → *Domains → Add* → `nahitferhat.com` → verdiği DNS kayıtlarını gir → doğrulanınca *API Keys*'ten anahtar al → `RESEND_API_KEY` olarak ekle → yeniden deploy.
+
+**Notlar**
+- Lokal veritabanındaki içerik canlıya taşınmaz; canlı site boş başlar ve içeriği canlı panelden girersin.
+- LinkedIn paylaşımı `SITE_URL` gerçek bir adres olduğunda çalışır.
