@@ -6,6 +6,7 @@ import type { JSONContent } from "@tiptap/react";
 import { savePost, type FormState } from "@/app/admin/actions";
 import { slugify } from "@/lib/text";
 import { ImageField } from "./ImageField";
+import { LinkedInSharePanel } from "./LinkedInShare";
 import { RichEditor } from "./RichEditor";
 import { preservingSubmit } from "./use-preserving-submit";
 import type { UploadMode } from "./upload";
@@ -26,7 +27,18 @@ export type PostFormValues = {
 
 type TranslationOption = { id: string; title: string; locale: "tr" | "en" };
 
-export function PostForm({ initial, translations, uploadMode }: { initial: PostFormValues; translations: TranslationOption[]; uploadMode: UploadMode }) {
+export function PostForm({
+  initial,
+  translations,
+  uploadMode,
+  share,
+}: {
+  initial: PostFormValues;
+  translations: TranslationOption[];
+  uploadMode: UploadMode;
+  /** Yayındaki yazılar için mutlak yazı adresi ve paylaşım görseli */
+  share?: { postUrl: string; imageUrl: string };
+}) {
   const [state, action, pending] = useActionState<FormState, FormData>(savePost, {});
   const [title, setTitle] = useState(initial.title);
   const [slug, setSlug] = useState(initial.slug);
@@ -127,6 +139,7 @@ export function PostForm({ initial, translations, uploadMode }: { initial: PostF
             </select>
             <span className="mt-1 block text-xs text-muted">Seçersen okuyucular yazının diğer dildeki haline geçebilir.</span>
           </label>
+          {published && share && <LinkedInSharePanel postUrl={share.postUrl} imageUrl={share.imageUrl} title={initial.title} />}
         </aside>
       </div>
     </form>

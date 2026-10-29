@@ -222,6 +222,15 @@ export async function saveProfile(_prev: FormState, formData: FormData): Promise
   return done("Profil kaydedildi.");
 }
 
+// ---------- Yorumlar ----------
+
+export async function deleteComment(formData: FormData) {
+  await requireAdmin();
+  await db.comment.delete({ where: { id: String(formData.get("id")) } });
+  revalidatePath("/[locale]/blog/[slug]", "page");
+  await toast("Yorum silindi.");
+}
+
 // ---------- Aboneler ----------
 
 export async function deleteSubscriber(formData: FormData) {

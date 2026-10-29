@@ -2,6 +2,8 @@ import type { JSONContent } from "@tiptap/react";
 import { notFound } from "next/navigation";
 import { PostForm } from "@/components/admin/PostForm";
 import { db } from "@/lib/db";
+import { localePath } from "@/lib/i18n";
+import { absoluteUrl, shareImageUrl } from "@/lib/site";
 import { uploadMode } from "@/lib/upload-mode";
 import { ConfirmSubmit } from "@/components/admin/ConfirmSubmit";
 import { deletePost } from "../../../actions";
@@ -25,6 +27,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
       <PostForm
         uploadMode={uploadMode()}
         translations={translations}
+        share={{ postUrl: absoluteUrl(localePath(post.locale, `/blog/${post.slug}`)), imageUrl: shareImageUrl(post) }}
         initial={{
           id: post.id,
           title: post.title,

@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Comments } from "@/components/site/Comments";
+import { LikeButton } from "@/components/site/LikeButton";
 import { SubscribeForm } from "@/components/site/SubscribeForm";
 import { db } from "@/lib/db";
 import { formatDate, localePath, t, type Locale } from "@/lib/i18n";
+import { shareImageUrl } from "@/lib/site";
+import { getVisitorId } from "@/lib/visitor";
 
 export const dynamic = "force-dynamic";
 
@@ -27,8 +31,9 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       title: post.title,
       description: post.excerpt ?? undefined,
       publishedTime: post.publishedAt?.toISOString(),
-      images: post.coverImage ? [post.coverImage] : undefined,
+      images: [{ url: shareImageUrl(post), width: 1200, height: 630, alt: post.title }],
     },
+    twitter: { card: "summary_large_image", title: post.title, description: post.excerpt ?? undefined, images: [shareImageUrl(post)] },
   };
 }
 
@@ -38,12 +43,18 @@ export default async function PostPage({ params }: Params) {
   if (!post) notFound();
   const d = t(locale);
 
-  const translation = post.translationKey
-    ? await db.post.findFirst({
-        where: { translationKey: post.translationKey, locale: { not: locale }, status: "PUBLISHED" },
-        select: { slug: true, locale: true },
-      })
-    : null;
+  const visitorId = await getVisitorId();
+  const [translation, likeCount, liked, commentCount] = await Promise.all([
+    post.translationKey
+      ? db.post.findFirst({
+          where: { translationKey: post.translationKey, locale: { not: locale }, status: "PUBLISHED" },
+          select: { slug: true, locale: true },
+        })
+      : null,
+    db.postLike.count({ where: { postId: post.id } }),
+    visitorId ? db.postLike.findUnique({ where: { postId_visitorId: { postId: post.id, visitorId } } }).then(Boolean) : false,
+    db.comment.count({ where: { postId: post.id } }),
+  ]);
 
   return (
     <article className="mx-auto max-w-3xl px-5 sm:px-6 pt-10">
@@ -74,12 +85,25 @@ export default async function PostPage({ params }: Params) {
       />
 
       {post.tags.length > 0 && (
-        <ul className="mt-12 flex flex-wrap gap-2" aria-label={d.tags}>
+        <ul className="mt-10 flex flex-wrap gap-2" aria-label={d.tags}>
           {post.tags.map((tag) => (
             <li key={tag} className="rounded-full bg-surface px-3 py-1 text-xs text-muted ring-1 ring-line">#{tag}</li>
           ))}
         </ul>
       )}
+
+      <div className="mt-10 flex flex-wrap items-center gap-3 border-t border-line pt-6">
+        <LikeButton postId={post.id} initialCount={likeCount} initialLiked={liked} labels={{ like: d.like, unlike: d.unlike, likes: d.likes }} />
+        <a href="#comments" className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-sm font-medium text-muted transition hover:border-accent hover:text-accent">
+          <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+            <path strokeLinejoin="round" d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 4v-4h0A1.5 1.5 0 0 1 4 14.5v-9Z" />
+          </svg>
+          <span className="tabular-nums">{commentCount}</span>
+          <span className="sr-only">{d.comments}</span>
+        </a>
+      </div>
+
+      <Comments postId={post.id} locale={locale} />
 
       <div className="mt-16">
         <SubscribeForm locale={locale} d={d} />

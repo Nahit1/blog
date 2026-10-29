@@ -1,14 +1,16 @@
 import Link from "next/link";
+import { LinkedInShareButton } from "@/components/admin/LinkedInShare";
 import { NotifyButton } from "@/components/admin/NotifyButton";
 import { db } from "@/lib/db";
-import { formatDate } from "@/lib/i18n";
+import { formatDate, localePath } from "@/lib/i18n";
+import { absoluteUrl } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
 export default async function PostsPage() {
   const posts = await db.post.findMany({
     orderBy: [{ updatedAt: "desc" }],
-    select: { id: true, title: true, slug: true, locale: true, status: true, publishedAt: true, notifiedAt: true, updatedAt: true },
+    select: { id: true, title: true, slug: true, locale: true, status: true, publishedAt: true, notifiedAt: true, updatedAt: true, _count: { select: { likes: true, comments: true } } },
   });
 
   return (
@@ -27,7 +29,9 @@ export default async function PostsPage() {
                 <th className="px-4 py-3 font-medium">Başlık</th>
                 <th className="px-4 py-3 font-medium">Dil</th>
                 <th className="px-4 py-3 font-medium">Durum</th>
+                <th className="px-4 py-3 font-medium">Etkileşim</th>
                 <th className="px-4 py-3 font-medium">Bildirim</th>
+                <th className="px-4 py-3 font-medium">Paylaş</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
@@ -43,6 +47,10 @@ export default async function PostsPage() {
                       {p.status === "PUBLISHED" ? "Yayında" : "Taslak"}
                     </span>
                   </td>
+                  <td className="whitespace-nowrap px-4 py-3 text-xs text-muted">
+                    <span title="Beğeni">♥ {p._count.likes}</span>
+                    <Link href="/admin/comments" title="Yorum" className="ml-3 hover:text-ink">💬 {p._count.comments}</Link>
+                  </td>
                   <td className="px-4 py-3">
                     {p.notifiedAt ? (
                       <span className="text-xs text-muted">Gönderildi · {formatDate(p.notifiedAt, "tr")}</span>
@@ -51,6 +59,9 @@ export default async function PostsPage() {
                     ) : (
                       <span className="text-xs text-muted">—</span>
                     )}
+                  </td>
+                  <td className="px-4 py-3">
+                    {p.status === "PUBLISHED" ? <LinkedInShareButton postUrl={absoluteUrl(localePath(p.locale, `/blog/${p.slug}`))} compact /> : <span className="text-xs text-muted">—</span>}
                   </td>
                 </tr>
               ))}
